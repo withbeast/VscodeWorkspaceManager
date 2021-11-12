@@ -2,25 +2,36 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
+class WorkspaceItem extends vscode.TreeItem {
+  constructor(public name: string, public readonly collapsibleState: vscode.TreeItemCollapsibleState) {
+    super(name, collapsibleState);
+  }
+  iconPath = {
+    light: path.join(__filename, '..', '..', 'assets', 'item_light.svg'),
+    dark: path.join(__filename, '..', '..', 'assets', 'item_dark.svg')
+  };
+}
+
 class Dependency extends vscode.TreeItem {
-    constructor(
-      public readonly label: string,
-      private version: string,
-      public readonly collapsibleState: vscode.TreeItemCollapsibleState
-    ) {
-      super(label, collapsibleState);
-      this.tooltip = `${this.label}-${this.version}`;
-      this.description = this.version;
-    }
-  
-    iconPath = {
-      light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
-      dark: path.join(__filename, '..', '..', 'resources', 'dark', 'dependency.svg')
-    };
+  constructor(
+    public readonly label: string,
+    private version: string,
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+  ) {
+    super(label, collapsibleState);
+    this.tooltip = `${this.label}-${this.version}`;
+    this.description = this.version;
+    console.log(path.join(__filename, '..', '..', 'assets', 'item_light.svg'));
   }
 
+  iconPath = {
+    light: path.join(__filename, '..', '..', 'assets', 'item_light.svg'),
+    dark: path.join(__filename, '..', '..', 'assets', 'item_dark.svg')
+  };
+}
+
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
-  constructor(private workspaceRoot: string) {}
+  constructor(private workspaceRoot: string) { }
 
   getTreeItem(element: Dependency): vscode.TreeItem {
     return element;
@@ -70,13 +81,13 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 
       const deps = packageJson.dependencies
         ? Object.keys(packageJson.dependencies).map(dep =>
-            toDep(dep, packageJson.dependencies[dep])
-          )
+          toDep(dep, packageJson.dependencies[dep])
+        )
         : [];
       const devDeps = packageJson.devDependencies
         ? Object.keys(packageJson.devDependencies).map(dep =>
-            toDep(dep, packageJson.devDependencies[dep])
-          )
+          toDep(dep, packageJson.devDependencies[dep])
+        )
         : [];
       return deps.concat(devDeps);
     } else {

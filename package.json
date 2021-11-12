@@ -1,5 +1,5 @@
 {
-  "name": "vscode-workspace-manager",
+	"name": "vscode-workspace-manager",
 	"displayName": "vscode-workspace-manager",
 	"description": "",
 	"version": "0.0.1",
@@ -10,36 +10,85 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:vscode-workspace-manager.helloWorld",
-		"onView:nodeDependencies"
+		"onView:WorkspaceList"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-workspace-manager.helloWorld",
-				"title": "Hello World"
+				"command": "WorkspaceManager.addWorkspace",
+				"title": "添加工作区",
+				"icon": {
+					"light": "assets/add_light.svg",
+					"dark": "assets/add_dark.svg"
+				}
+			},{
+				"command": "WorkspaceManager.refreshWorkspace",
+				"title": "刷新目录",
+				"icon": {
+					"light": "assets/refresh_light.svg",
+					"dark": "assets/refresh_dark.svg"
+				}
+			},{
+				"command": "WorkspaceManager.activateWorkspace",
+				"title": "激活工作区",
+				"icon": {
+					"light": "assets/activate_light.svg",
+					"dark": "assets/activate_dark.svg"
+				}
+			},{
+				"command": "WorkspaceManager.deleteWorkspace",
+				"title": "删除工作区",
+				"icon": {
+					"light": "assets/delete_light.svg",
+					"dark": "assets/delete_dark.svg"
+				}
 			}
 		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "WorkspaceManager.addWorkspace",
+					"when": "view == WorkspaceList",
+					"group": "navigation"
+				},{
+					"command": "WorkspaceManager.refreshWorkspace",
+					"when": "view == WorkspaceList",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+				  "command": "WorkspaceManager.activateWorkspace",
+				  "when": "view == WorkspaceList && viewItem == workspace",
+				  "group": "inline"
+				},
+				{
+				  "command": "WorkspaceManager.deleteWorkspace",
+				  "when": "view == WorkspaceList && viewItem == workspace",
+				  "group": "inline"
+				}
+			  ]
+		},
 		"viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "WorkspaceManagerTab",
-                    "title": "工作区管理",
-                    "icon": "assets/icon.svg"
-                }
-            ]
-        },
+			"activitybar": [
+				{
+					"id": "WorkspaceManagerTab",
+					"title": "工作区管理",
+					"icon": "assets/icon.svg"
+				}
+			]
+		},
 		"views": {
 			"WorkspaceManagerTab": [
-			  {
-				"id": "nodeDependencies",
-				"name": "Node Dependencies"
-			  },
-			  {
-				"id": "nodeDependencies",
-				"name": "Node Dependencies"
-			  }
+				{
+					"id": "WorkspaceList",
+					"name": "工作区目录"
+				},
+				{
+					"id": "ProjectList",
+					"name": "项目切换"
+				}
 			]
 		}
 	},
