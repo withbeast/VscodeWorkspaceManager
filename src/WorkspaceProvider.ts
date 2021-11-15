@@ -2,14 +2,18 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
-class Workspace extends vscode.TreeItem {
-  constructor(public name: string,public paths:string, public readonly collapsibleState: vscode.TreeItemCollapsibleState) {
+export class Workspace extends vscode.TreeItem {
+  constructor(public name: string,public paths:string,public active:boolean, public readonly collapsibleState: vscode.TreeItemCollapsibleState) {
     super(name, collapsibleState);
+    this.description=paths;
+    this.tooltip=name+"\n"+paths;
+    if(active){
+      this.iconPath={
+        light: path.join(__filename, '..', '..', 'assets', 'item_light.svg'),
+        dark: path.join(__filename, '..', '..', 'assets', 'item_dark.svg')
+      };
+    }
   }
-  iconPath = {
-    light: path.join(__filename, '..', '..', 'assets', 'item_light.svg'),
-    dark: path.join(__filename, '..', '..', 'assets', 'item_dark.svg')
-  };
 }
 
 
@@ -22,6 +26,11 @@ export class WorkspaceProvider implements vscode.TreeDataProvider<Workspace> {
   constructor(private workspaceRoot: string) { }
 
   getTreeItem(element: Workspace): vscode.TreeItem {
+    if(element.active){
+      element.contextValue="workspaceActive";
+    }else{
+      element.contextValue="workspace";
+    }
     return element;
   }
 
@@ -47,7 +56,8 @@ export class WorkspaceProvider implements vscode.TreeDataProvider<Workspace> {
     for (let i = 0; i < workspaces.length; i++) {
         const name = workspaces[i].name;
         const paths = workspaces[i].path;
-        arr.push(new Workspace(name,paths,vscode.TreeItemCollapsibleState.None));
+        const active= workspaces[i].active;
+        arr.push(new Workspace(name,paths,active,vscode.TreeItemCollapsibleState.None));
     }
     return arr;
   }

@@ -1,1 +1,22 @@
-{"workspaces":[{"name":"c#工作区","path":"/home/withbeast/withbeast/C#Projects/workspace/c#.code-workspace"},{"name":"Web工作区","path":"/home/withbeast/withbeast/WebProjects/workspace/web.code-workspace"},{"name":"latex工作区","path":"/home/withbeast/latex.code-workspace"}],"settings":{}}
+{
+    "workspaces": [
+        {
+            "name": "c# (工作区)",
+            "path": "/home/withbeast/withbeast/C#Projects/workspace/c#.code-workspace",
+            "active": true,
+            "folders": [
+                {
+                    "name": "workspace",
+                    "path": "/home/withbeast/withbeast/C#Projects/workspace",
+                    "active": true
+                },
+                {
+                    "name": "secret-silk-road",
+                    "path": "/home/withbeast/withbeast/C#Projects/secret-silk-road",
+                    "active": true
+                }
+            ]
+        }
+    ],
+    "settings": {}
+}

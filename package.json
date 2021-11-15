@@ -16,32 +16,75 @@
 	"contributes": {
 		"commands": [
 			{
+				"command": "WorkspaceManager.test",
+				"title": "测试",
+				"icon": {
+					"light": "assets/test_light.svg",
+					"dark": "assets/test_dark.svg"
+				}
+			},
+			{
 				"command": "WorkspaceManager.addWorkspace",
-				"title": "添加工作区",
+				"title": "添加当前工作区到目录",
 				"icon": {
 					"light": "assets/add_light.svg",
 					"dark": "assets/add_dark.svg"
 				}
-			},{
+			},
+			{
 				"command": "WorkspaceManager.refreshWorkspace",
-				"title": "刷新目录",
+				"title": "刷新工作区目录",
 				"icon": {
 					"light": "assets/refresh_light.svg",
 					"dark": "assets/refresh_dark.svg"
 				}
-			},{
+			},
+			{
 				"command": "WorkspaceManager.activateWorkspace",
 				"title": "激活工作区",
 				"icon": {
 					"light": "assets/activate_light.svg",
 					"dark": "assets/activate_dark.svg"
 				}
-			},{
+			},
+			{
 				"command": "WorkspaceManager.deleteWorkspace",
-				"title": "删除工作区",
+				"title": "从目录中删除",
 				"icon": {
 					"light": "assets/delete_light.svg",
 					"dark": "assets/delete_dark.svg"
+				}
+			},
+			{
+				"command": "WorkspaceManager.addProject",
+				"title": "添加文件夹到目录",
+				"icon": {
+					"light": "assets/add_light.svg",
+					"dark": "assets/add_dark.svg"
+				}
+			},
+			{
+				"command": "WorkspaceManager.deleteProject",
+				"title": "从目录中删除",
+				"icon": {
+					"light": "assets/delete_light.svg",
+					"dark": "assets/delete_dark.svg"
+				}
+			},
+			{
+				"command": "WorkspaceManager.refreshProject",
+				"title": "刷新项目目录",
+				"icon": {
+					"light": "assets/refresh_light.svg",
+					"dark": "assets/refresh_dark.svg"
+				}
+			},
+			{
+				"command": "WorkspaceManager.switchProject",
+				"title": "切换选中",
+				"icon": {
+					"light": "assets/switch_light.svg",
+					"dark": "assets/switch_dark.svg"
 				}
 			}
 		],
@@ -51,24 +94,45 @@
 					"command": "WorkspaceManager.addWorkspace",
 					"when": "view == WorkspaceList",
 					"group": "navigation"
-				},{
+				},
+				{
 					"command": "WorkspaceManager.refreshWorkspace",
 					"when": "view == WorkspaceList",
+					"group": "navigation"
+				},
+				{
+					"command": "WorkspaceManager.addProject",
+					"when": "view == ProjectList",
+					"group": "navigation"
+				},
+				{
+					"command": "WorkspaceManager.refreshProject",
+					"when": "view == ProjectList",
+					"group": "navigation"
+				},{
+					"command": "WorkspaceManager.deleteWorkspace",
+					"when": "view == WorkspaceList",
+					"group": "navigation"
+				},
+				{
+					"command": "WorkspaceManager.deleteProject",
+					"when": "view == ProjectList",
 					"group": "navigation"
 				}
 			],
 			"view/item/context": [
 				{
-				  "command": "WorkspaceManager.activateWorkspace",
-				  "when": "view == WorkspaceList && viewItem == workspace",
-				  "group": "inline"
+					"command": "WorkspaceManager.activateWorkspace",
+					"when": "view == WorkspaceList && viewItem == workspace",
+					"group": "inline"
 				},
+				
 				{
-				  "command": "WorkspaceManager.deleteWorkspace",
-				  "when": "view == WorkspaceList && viewItem == workspace",
-				  "group": "inline"
+					"command": "WorkspaceManager.switchProject",
+					"when": "view == ProjectList",
+					"group": "inline"
 				}
-			  ]
+			]
 		},
 		"viewsContainers": {
 			"activitybar": [
