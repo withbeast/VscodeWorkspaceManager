@@ -24,8 +24,16 @@
 				}
 			},
 			{
-				"command": "WorkspaceManager.addWorkspace",
+				"command": "WorkspaceManager.currentWorkspace",
 				"title": "添加当前工作区到目录",
+				"icon": {
+					"light": "assets/current_light.svg",
+					"dark": "assets/current_dark.svg"
+				}
+			},
+			{
+				"command": "WorkspaceManager.addWorkspace",
+				"title": "添加新的工作区到目录",
 				"icon": {
 					"light": "assets/add_light.svg",
 					"dark": "assets/add_dark.svg"
@@ -96,7 +104,17 @@
 					"group": "navigation"
 				},
 				{
+					"command": "WorkspaceManager.currentWorkspace",
+					"when": "view == WorkspaceList",
+					"group": "navigation"
+				},
+				{
 					"command": "WorkspaceManager.refreshWorkspace",
+					"when": "view == WorkspaceList",
+					"group": "navigation"
+				},
+				{
+					"command": "WorkspaceManager.deleteWorkspace",
 					"when": "view == WorkspaceList",
 					"group": "navigation"
 				},
@@ -108,10 +126,6 @@
 				{
 					"command": "WorkspaceManager.refreshProject",
 					"when": "view == ProjectList",
-					"group": "navigation"
-				},{
-					"command": "WorkspaceManager.deleteWorkspace",
-					"when": "view == WorkspaceList",
 					"group": "navigation"
 				},
 				{
@@ -126,7 +140,6 @@
 					"when": "view == WorkspaceList && viewItem == workspace",
 					"group": "inline"
 				},
-				
 				{
 					"command": "WorkspaceManager.switchProject",
 					"when": "view == ProjectList",
@@ -139,7 +152,7 @@
 				{
 					"id": "WorkspaceManagerTab",
 					"title": "工作区管理",
-					"icon": "assets/icon.svg"
+					"icon":"assets/wmIcon.svg"
 				}
 			]
 		},
@@ -151,7 +164,7 @@
 				},
 				{
 					"id": "ProjectList",
-					"name": "项目切换"
+					"name": "项目目录"
 				}
 			]
 		}
@@ -165,16 +178,19 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.62.0",
 		"@types/glob": "^7.1.4",
 		"@types/mocha": "^9.0.0",
 		"@types/node": "14.x",
+		"@types/vscode": "^1.62.0",
 		"@typescript-eslint/eslint-plugin": "^5.1.0",
 		"@typescript-eslint/parser": "^5.1.0",
+		"@vscode/test-electron": "^1.6.2",
 		"eslint": "^8.1.0",
 		"glob": "^7.1.7",
 		"mocha": "^9.1.3",
-		"typescript": "^4.4.4",
-		"@vscode/test-electron": "^1.6.2"
+		"typescript": "^4.4.4"
+	},
+	"dependencies": {
+		"json5": "^2.2.0"
 	}
 }

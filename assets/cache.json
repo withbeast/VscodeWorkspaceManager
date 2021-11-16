@@ -3,19 +3,22 @@
         {
             "name": "c# (工作区)",
             "path": "/home/withbeast/withbeast/C#Projects/workspace/c#.code-workspace",
-            "active": true,
-            "folders": [
-                {
-                    "name": "workspace",
-                    "path": "/home/withbeast/withbeast/C#Projects/workspace",
-                    "active": true
-                },
-                {
-                    "name": "secret-silk-road",
-                    "path": "/home/withbeast/withbeast/C#Projects/secret-silk-road",
-                    "active": true
-                }
-            ]
+            "active": true
+        },
+        {
+            "name": "c++ (工作区)",
+            "path": "/home/withbeast/withbeast/C++Projects/workspace/c++.code-workspace",
+            "active": false
+        },
+        {
+            "name": "python (工作区)",
+            "path": "/home/withbeast/withbeast/PythonProjects/workspace/python.code-workspace",
+            "active": false
+        },
+        {
+            "name": "latex (工作区)",
+            "path": "/home/withbeast/withbeast/LatexProjects/workspace/latex.code-workspace",
+            "active": false
         }
     ],
     "settings": {}
