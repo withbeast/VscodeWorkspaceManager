@@ -47,11 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 		 * 测试方法
 		 */
 		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.test', () => {
-			console.log("zfz");
-		}));
-		
-		context.subscriptions.push(vscode.commands.registerCommand('workbench.action.addRootFolder', () => {
-			console.log("zfz");
+			console.log("test");
 		}));
 		/**
 		 * 工作区相关
