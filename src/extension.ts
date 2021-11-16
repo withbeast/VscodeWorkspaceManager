@@ -35,7 +35,7 @@ class WorkspaceItem implements vscode.QuickPickItem {
 }
 export function activate(context: vscode.ExtensionContext) {
 	let dataPath = path.join(__filename, '..', '..', 'assets', 'cache.json');
-	let workPath = vscode.workspace.workspaceFile?.path;
+	let workPath = vscode.workspace.workspaceFile?.fsPath;
 	let workName = vscode.workspace.name;
 	if (workPath && workName) {
 		init(dataPath, workPath);
@@ -66,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 				}).then((files: vscode.Uri[] | undefined) => {
 					if (files) {
-						let workspacePath = files[0].path;
+						let workspacePath = files[0].fsPath;
 						let workspaceName = path.basename(workspacePath, '.code-workspace') + " (工作区)";
 						if (workspacePath !== workPath) {
 							let data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
@@ -212,8 +212,8 @@ export function activate(context: vscode.ExtensionContext) {
 			}).then((folder: vscode.Uri[] | undefined) => {
 				if (folder) {
 					let work = JSON5.parse(fs.readFileSync(workPath as string, 'utf-8'));
-					let projectName = path.basename(folder[0].path);
-					let projectPath = path.relative(path.dirname(workPath as string), folder[0].path);
+					let projectName = path.basename(folder[0].fsPath);
+					let projectPath = path.relative(path.dirname(workPath as string), folder[0].fsPath);
 					projectPath = projectPath === "" ? "." : projectPath;
 					let exist = false;
 					work['wmFolders'].forEach((project: any) => {
