@@ -38,7 +38,7 @@ class WorkspaceItem implements vscode.QuickPickItem {
 }
 export function activate(context: vscode.ExtensionContext) {
 	let dataPath = path.join(__filename, '..', '..', 'assets', 'cache.json');
-	let workPath = vscode.workspace.workspaceFile?.path;
+	let workPath = vscode.workspace.workspaceFile?.fsPath;
 	let workName = vscode.workspace.name;
 	initDataFile(dataPath,workPath?workPath:"");
 	const workspaceProvider = new WorkspaceProvider();
@@ -48,8 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 	  * 工作区相关
 	  */
 	context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.addWorkspace', () => {
-		vscode.window.showOpenDialog(
-			{
+		vscode.window.showOpenDialog({
 				canSelectFiles: true,
 				canSelectMany: false,
 				filters: {
@@ -70,6 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			});
 	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.refreshWorkspace', () => {
 		workspaceProvider.refresh();
 	}));
@@ -118,6 +118,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage("正在打开工作区：" + node.name);
 		}
 	}));
+
 	if (workPath && workName) {
 		initWorkFile(dataPath);
 		const projectProvider = new ProjectProvider(workPath);
@@ -208,8 +209,8 @@ export function activate(context: vscode.ExtensionContext) {
 			}).then((folder: vscode.Uri[] | undefined) => {
 				if (folder) {
 					let work = JSON5.parse(fs.readFileSync(workPath as string, 'utf-8'));
-					let projectName = path.basename(folder[0].path);
-					let projectPath = path.relative(path.dirname(workPath as string), folder[0].path);
+					let projectName = path.basename(folder[0].fsPath);
+					let projectPath = path.relative(path.dirname(workPath as string), folder[0].fsPath);
 					projectPath = projectPath === "" ? "." : projectPath;
 					let exist = false;
 					work['wmFolders'].forEach((project: any) => {
