@@ -120,7 +120,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	if (workPath && workName) {
-		initWorkFile(dataPath);
+		initWorkFile(workPath);
 		const projectProvider = new ProjectProvider(workPath);
 		vscode.window.registerTreeDataProvider('ProjectList', projectProvider);
 		/**
