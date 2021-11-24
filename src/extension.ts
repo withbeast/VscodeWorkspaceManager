@@ -8,9 +8,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as JSON5 from 'json5';
 
-function init(dataPath: string, workPath: string) {
+function initDataFile(dataPath: string,workPath:string) {
 	const data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
-	const work = JSON5.parse(fs.readFileSync(workPath, 'utf-8'));
 	data['workspaces'].forEach((item: any) => {
 		if (!("name" in item)) {
 			item['name'] = path.basename(item.path, '.code-workspace') + " (工作区)";
@@ -21,14 +20,18 @@ function init(dataPath: string, workPath: string) {
 			item['active'] = false;
 		}
 	});
-	if(!("wmFolders" in work)){
-		work['wmFolders']=[];
-	}
 	fs.writeFileSync(dataPath, JSON.stringify(data, null, 4), 'utf-8');
+}
+function initWorkFile(workPath: string) {
+	const work = JSON5.parse(fs.readFileSync(workPath, 'utf-8'));
+
+	if (!("wmFolders" in work)) {
+		work['wmFolders'] = [];
+	}
 	fs.writeFileSync(workPath, JSON.stringify(work, null, 4), 'utf-8');
 }
 class ProjectItem implements vscode.QuickPickItem {
-	constructor(public label: string, public description: string,public active:boolean) { }
+	constructor(public label: string, public description: string, public active: boolean) { }
 }
 class WorkspaceItem implements vscode.QuickPickItem {
 	constructor(public label: string, public description: string, public isActive: boolean) { }
@@ -37,72 +40,60 @@ export function activate(context: vscode.ExtensionContext) {
 	let dataPath = path.join(__filename, '..', '..', 'assets', 'cache.json');
 	let workPath = vscode.workspace.workspaceFile?.path;
 	let workName = vscode.workspace.name;
-	if (workPath && workName) {
-		init(dataPath, workPath);
-		const workspaceProvider = new WorkspaceProvider(workPath);
-		const projectProvider = new ProjectProvider(workPath);
-		vscode.window.registerTreeDataProvider('WorkspaceList', workspaceProvider);
-		vscode.window.registerTreeDataProvider('ProjectList', projectProvider);
-		/**
-		 * 测试方法
-		 */
-		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.test', () => {
-			console.log("zfz");
-		}));
-		
-		context.subscriptions.push(vscode.commands.registerCommand('workbench.action.addRootFolder', () => {
-			console.log("zfz");
-		}));
-		/**
-		 * 工作区相关
-		 */
-		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.addWorkspace', () => {
-			vscode.window.showOpenDialog(
-				{
-					canSelectFiles: true,
-					canSelectMany: false,
-					filters: {
-						'worspace': ['code-workspace']
+	initDataFile(dataPath,workPath?workPath:"");
+	const workspaceProvider = new WorkspaceProvider();
+	vscode.window.registerTreeDataProvider('WorkspaceList', workspaceProvider);
+	
+	/**
+	  * 工作区相关
+	  */
+	context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.addWorkspace', () => {
+		vscode.window.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectMany: false,
+				filters: {
+					'worspace': ['code-workspace']
+				}
+			}).then((files: vscode.Uri[] | undefined) => {
+				if (files) {
+					let workspacePath = files[0].path;
+					let workspaceName = path.basename(workspacePath, '.code-workspace') + " (工作区)";
+					if (workspacePath !== workPath) {
+						let data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
+						data['workspaces'].push({ name: workspaceName, path: workspacePath, active: false });
+						fs.writeFileSync(dataPath, JSON.stringify(data, null, 4), 'utf-8');
+						workspaceProvider.refresh();
+					} else {
+						vscode.window.showInformationMessage('工作区已在目录中！');
 					}
-				}).then((files: vscode.Uri[] | undefined) => {
-					if (files) {
-						let workspacePath = files[0].path;
-						let workspaceName = path.basename(workspacePath, '.code-workspace') + " (工作区)";
-						if (workspacePath !== workPath) {
-							let data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
-							data['workspaces'].push({ name: workspaceName, path: workspacePath, active: false });
-							fs.writeFileSync(dataPath, JSON.stringify(data, null, 4), 'utf-8');
-							workspaceProvider.refresh();
-						} else {
-							vscode.window.showInformationMessage('工作区已在目录中！');
-						}
-					}
-				});
-		}));
-		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.refreshWorkspace', () => {
-			workspaceProvider.refresh();
-		}));
-		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.deleteWorkspace', () => {
-			let data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
-			let dataArr: WorkspaceItem[] = [];
+				}
+			});
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.refreshWorkspace', () => {
+		workspaceProvider.refresh();
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.deleteWorkspace', () => {
+		let data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
+		let dataArr: WorkspaceItem[] = [];
+		data['workspaces'].forEach((item: any) => {
+			dataArr.push(new WorkspaceItem(item['name'], item['path'], item['active']));
+		});
+		vscode.window.showQuickPick(dataArr).then((tar: vscode.QuickPickItem | undefined) => {
+			let newArr: any[] = [];
 			data['workspaces'].forEach((item: any) => {
-				dataArr.push(new WorkspaceItem(item['name'], item['path'], item['active']));
+				if (tar?.description !== item['path']) {
+					newArr.push(item);
+				}
 			});
-			vscode.window.showQuickPick(dataArr).then((tar: vscode.QuickPickItem | undefined) => {
-				let newArr: any[] = [];
-				data['workspaces'].forEach((item: any) => {
-					if (tar?.description !== item['path']) {
-						newArr.push(item);
-					}
-				});
-				data['workspaces'] = newArr;
-				fs.writeFileSync(dataPath, JSON.stringify(data, null, 4), 'utf-8');
-				workspaceProvider.refresh();
-			});
+			data['workspaces'] = newArr;
+			fs.writeFileSync(dataPath, JSON.stringify(data, null, 4), 'utf-8');
+			workspaceProvider.refresh();
+		});
 
-		}));
-		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.currentWorkspace', () => {
-			let workspaceDir = path.dirname(workPath as string);
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.currentWorkspace', () => {
+		if(workName&&workPath){
 			let data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
 			let exist = false;
 			data['workspaces'].forEach((element: any) => {
@@ -116,50 +107,55 @@ export function activate(context: vscode.ExtensionContext) {
 				fs.writeFileSync(dataPath, JSON.stringify(data, null, 4), 'utf-8');
 				workspaceProvider.refresh();
 			}
-		}));
-		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.activateWorkspace', (node: Workspace) => {
-			if (node.paths === workPath) {
-				vscode.window.showInformationMessage("工作区已经处于激活状态");
-			} else {
-				let uri = vscode.Uri.file(node.paths);
-				vscode.commands.executeCommand('vscode.openFolder', uri);
-				vscode.window.showInformationMessage("正在打开工作区：" + node.name);
-			}
-		}));
+		}else{vscode.window.showInformationMessage('没有打开任何工作区！');}
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.activateWorkspace', (node: Workspace) => {
+		if (node.paths === workPath) {
+			vscode.window.showInformationMessage("工作区已经处于激活状态");
+		} else {
+			let uri = vscode.Uri.file(node.paths);
+			vscode.commands.executeCommand('vscode.openFolder', uri);
+			vscode.window.showInformationMessage("正在打开工作区：" + node.name);
+		}
+	}));
+	if (workPath && workName) {
+		initWorkFile(dataPath);
+		const projectProvider = new ProjectProvider(workPath);
+		vscode.window.registerTreeDataProvider('ProjectList', projectProvider);
 		/**
 		 * 项目相关
 		 */
 		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.switchProject', (node: Project) => {
 			let work = JSON5.parse(fs.readFileSync(workPath as string, 'utf-8'));
-			let workspaceDir=path.dirname(workPath as string);
+			let workspaceDir = path.dirname(workPath as string);
 			work['wmFolders'].forEach((project: any) => {
 				if (project['path'] === node.paths) {
-					if(project['active']){
-						project['active']=false;
-						node.active=false;
-					}else{
-						project['active']=true;
-						node.active=true;
+					if (project['active']) {
+						project['active'] = false;
+						node.active = false;
+					} else {
+						project['active'] = true;
+						node.active = true;
 					}
 				}
 			});
-			if(node.active){
-				work['folders'].push({name:node.name,path:node.paths});
-			}else{
-				let newArr:any[]=[];
-				work['folders'].forEach((project:any)=>{
-					if(project['path']!==node.paths){
+			if (node.active) {
+				work['folders'].push({ name: node.name, path: node.paths });
+			} else {
+				let newArr: any[] = [];
+				work['folders'].forEach((project: any) => {
+					if (project['path'] !== node.paths) {
 						newArr.push(project);
 					}
 				});
-				work['folders']=newArr;
+				work['folders'] = newArr;
 			}
 			fs.writeFileSync(workPath as string, JSON.stringify(work, null, 4), 'utf-8');
 			projectProvider.refresh();
 		}));
 		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.deleteProject', () => {
 			let work = JSON5.parse(fs.readFileSync(workPath as string, 'utf-8'));
-			let workspaceDir=path.dirname(workPath as string);
+			let workspaceDir = path.dirname(workPath as string);
 			let dataArr: vscode.QuickPickItem[] = [];
 			work['wmFolders'].forEach((project: any) => {
 				dataArr.push(new ProjectItem(
@@ -191,14 +187,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 		context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.refreshProject', () => {
 			let work = JSON5.parse(fs.readFileSync(workPath as string, 'utf-8'));
-			let projectList:string[]=[];
-			work['wmFolders'].forEach((project:any)=>{
+			let projectList: string[] = [];
+			work['wmFolders'].forEach((project: any) => {
 				projectList.push(project['path']);
 			});
-			work['folders'].forEach((project:any)=>{
-				if(!projectList.includes(project['path'])){
-					let projectName:string=path.basename(path.isAbsolute(project['path']) ? project['path'] : path.resolve(path.dirname(workPath as string), project['path']));
-					work['wmFolders'].push({name:projectName,path:project['path'],active:true});
+			work['folders'].forEach((project: any) => {
+				if (!projectList.includes(project['path'])) {
+					let projectName: string = path.basename(path.isAbsolute(project['path']) ? project['path'] : path.resolve(path.dirname(workPath as string), project['path']));
+					work['wmFolders'].push({ name: projectName, path: project['path'], active: true });
 				}
 			});
 			fs.writeFileSync(workPath as string, JSON.stringify(work, null, 4), 'utf-8');
@@ -222,7 +218,7 @@ export function activate(context: vscode.ExtensionContext) {
 						}
 					});
 					if (!exist) {
-						work['wmFolders'].push({ path: projectPath, name: projectName,active:true });
+						work['wmFolders'].push({ path: projectPath, name: projectName, active: true });
 						work['folders'].push({ path: projectPath, name: projectName });
 						fs.writeFileSync(workPath as string, JSON.stringify(work, null, 4), 'utf-8');
 						projectProvider.refresh();
@@ -231,6 +227,12 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 		}));
 	} else { vscode.window.showInformationMessage('没有打开任何工作区！'); }
+	/**
+	  * 测试方法
+	  */
+	 context.subscriptions.push(vscode.commands.registerCommand('WorkspaceManager.test', () => {
+		console.log("test");
+	}));
 }
 
 export function deactivate() { }

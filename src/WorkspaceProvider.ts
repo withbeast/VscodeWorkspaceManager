@@ -23,7 +23,7 @@ export class WorkspaceProvider implements vscode.TreeDataProvider<Workspace> {
   readonly onDidChangeTreeData: vscode.Event<Workspace | undefined | null | void> = this._onDidChangeTreeData.event;
 
   
-  constructor(private workspaceRoot: string) { }
+  constructor() { }
 
   getTreeItem(element: Workspace): vscode.TreeItem {
     if(element.active){
@@ -35,10 +35,7 @@ export class WorkspaceProvider implements vscode.TreeDataProvider<Workspace> {
   }
 
   getChildren(element?: Workspace): Thenable<Workspace[]> {
-    if (!this.workspaceRoot) {
-      vscode.window.showInformationMessage('No dependency in empty workspace');
-      return Promise.resolve([]);
-    }
+
 
     if (element) {
       return Promise.resolve([]);

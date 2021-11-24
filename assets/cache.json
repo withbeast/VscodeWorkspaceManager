@@ -1,25 +1,5 @@
 {
     "workspaces": [
-        {
-            "name": "c# (工作区)",
-            "path": "/home/withbeast/withbeast/C#Projects/workspace/c#.code-workspace",
-            "active": true
-        },
-        {
-            "name": "c++ (工作区)",
-            "path": "/home/withbeast/withbeast/C++Projects/workspace/c++.code-workspace",
-            "active": false
-        },
-        {
-            "name": "python (工作区)",
-            "path": "/home/withbeast/withbeast/PythonProjects/workspace/python.code-workspace",
-            "active": false
-        },
-        {
-            "name": "latex (工作区)",
-            "path": "/home/withbeast/withbeast/LatexProjects/workspace/latex.code-workspace",
-            "active": false
-        }
     ],
     "settings": {}
 }
