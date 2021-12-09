@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			}).then((files: vscode.Uri[] | undefined) => {
 				if (files) {
-					let workspacePath = files[0].path;
+					let workspacePath = files[0].fsPath;
 					let workspaceName = path.basename(workspacePath, '.code-workspace') + " (工作区)";
 					if (workspacePath !== workPath) {
 						let data = JSON5.parse(fs.readFileSync(dataPath, 'utf-8'));
